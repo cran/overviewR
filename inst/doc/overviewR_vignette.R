@@ -1,7 +1,14 @@
 ## ----setup, include = FALSE---------------------------------------------------
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+knitr::opts_chunk$set(collapse = TRUE,
+                      comment = "#>")
+
+## ----echo=FALSE,results='hide',message=FALSE,include=FALSE, eval=TRUE---------
+if (!require(knitr))
+  install.packages("knitr", repos = "http://cran.us.r-project.org")
+if (!require(devtools))
+  install.packages("devtools", repos = "http://cran.us.r-project.org")
+if (!require(dplyr))
+  install.packages("dplyr", repos = "http://cran.us.r-project.org"
   )
 
 ## ---- message=FALSE, warning=FALSE, eval=FALSE--------------------------------
@@ -96,4 +103,35 @@ output_table <-
 ## -----------------------------------------------------------------------------
 library(knitr)
 knitr::kable(output_table)
+
+## ---- message=FALSE, warning=FALSE, results = "hide", eval=TRUE---------------
+library(devtools)
+devtools::install_github("cosimameyer/overviewR")
+library(overviewR)
+
+## ---- fig.align='center', eval = FALSE----------------------------------------
+#  data(toydata)
+#  overview_plot(dat = toydata, id = ccode, time = year)
+
+## ---- include = FALSE---------------------------------------------------------
+toydata_red <- toydata[-sample(seq_len(nrow(toydata)), 64), ]
+
+## ---- fig.align='center', eval = FALSE----------------------------------------
+#  overview_heat(toydata_red,
+#                  ccode,
+#                  year,
+#                  perc = TRUE,
+#                  exp_total = 12)
+
+## ---- include=FALSE-----------------------------------------------------------
+toydata_with_na <- toydata %>%
+  dplyr::mutate(year = ifelse(year < 1992, NA, year),
+                month = ifelse(month %in% c("Jan", "Jun", "Aug"), NA, month),
+                gdp = ifelse(gdp < 20000, NA, gdp))
+
+## ----  fig.align='center', eval= FALSE----------------------------------------
+#  overview_na(toydata_with_na)
+
+## ---- fig.align='center', eval = FALSE----------------------------------------
+#  overview_na(toydata_with_na, perc = FALSE)
 
