@@ -11,13 +11,22 @@ if (!require(dplyr))
   install.packages("dplyr", repos = "http://cran.us.r-project.org"
   )
 
-## ---- message=FALSE, warning=FALSE, eval=FALSE--------------------------------
-#  devtools::install_github("cosimameyer/overviewR")
-#  library(overviewR)
-
 ## ---- eval=FALSE--------------------------------------------------------------
-#  data(toydata)
-#  head(toydata)
+#  install.packages("overviewR", force = TRUE)
+
+## ---- message=FALSE, warning=FALSE, results = "hide", eval=FALSE--------------
+#  library(devtools)
+#  devtools::install_github("cosimameyer/overviewR")
+
+## ---- include = FALSE, eval = FALSE-------------------------------------------
+#  install.packages("overviewR")
+
+## ---- message=FALSE, warning=FALSE--------------------------------------------
+library(overviewR)
+
+## -----------------------------------------------------------------------------
+data(toydata)
+head(toydata)
 
 ## ---- message=FALSE, warning=FALSE, eval=FALSE--------------------------------
 #  output_table <- overview_tab(dat = toydata, id = ccode, time = year)
@@ -50,8 +59,8 @@ if (!require(dplyr))
 #                 title = "Cool new title for our awesome table")
 
 ## ---- eval=FALSE, include=FALSE-----------------------------------------------
-#  overview_print(obj = output_table, id = "Countries", time = "Years",
-#                 title = "Cool new title for our awesome table")
+#  overview_print(obj = output_table, id = "Countries",
+#                 time = "Years", title = "Cool new title for our awesome table")
 
 ## ---- eval = FALSE------------------------------------------------------------
 #  overview_print(
@@ -72,7 +81,36 @@ if (!require(dplyr))
 #  )
 
 ## ---- eval = FALSE------------------------------------------------------------
-#  overview_print(obj = output_table, save_out = TRUE)
+#  overview_print(obj = output_table, save_out = TRUE, path = "SET-YOUR-PATH",
+#                 file = "output.tex")
+
+## ---- out.width = '50%', fig.align='center'-----------------------------------
+data(toydata)
+overview_plot(dat = toydata, id = ccode, time = year)
+
+## ---- include = FALSE---------------------------------------------------------
+toydata_red <- toydata[-sample(seq_len(nrow(toydata)), 64), ]
+
+## ---- out.width = '50%', fig.align='center'-----------------------------------
+overview_heat(toydata_red,
+                ccode,
+                year,
+                perc = TRUE,
+                exp_total = 12)
+
+## ---- include=FALSE-----------------------------------------------------------
+library(dplyr)
+
+toydata_with_na <- toydata %>%
+  dplyr::mutate(year = ifelse(year < 1992, NA, year),
+                month = ifelse(month %in% c("Jan", "Jun", "Aug"), NA, month),
+                gdp = ifelse(gdp < 20000, NA, gdp))
+
+## ---- out.width = '50%', fig.align='center'-----------------------------------
+overview_na(toydata_with_na)
+
+## ---- out.width = '50%', fig.align='center'-----------------------------------
+overview_na(toydata_with_na, perc = FALSE)
 
 ## ---- eval=FALSE--------------------------------------------------------------
 #  library(flextable)
@@ -103,35 +141,4 @@ output_table <-
 ## -----------------------------------------------------------------------------
 library(knitr)
 knitr::kable(output_table)
-
-## ---- message=FALSE, warning=FALSE, results = "hide", eval=TRUE---------------
-library(devtools)
-devtools::install_github("cosimameyer/overviewR")
-library(overviewR)
-
-## ---- fig.align='center', eval = FALSE----------------------------------------
-#  data(toydata)
-#  overview_plot(dat = toydata, id = ccode, time = year)
-
-## ---- include = FALSE---------------------------------------------------------
-toydata_red <- toydata[-sample(seq_len(nrow(toydata)), 64), ]
-
-## ---- fig.align='center', eval = FALSE----------------------------------------
-#  overview_heat(toydata_red,
-#                  ccode,
-#                  year,
-#                  perc = TRUE,
-#                  exp_total = 12)
-
-## ---- include=FALSE-----------------------------------------------------------
-toydata_with_na <- toydata %>%
-  dplyr::mutate(year = ifelse(year < 1992, NA, year),
-                month = ifelse(month %in% c("Jan", "Jun", "Aug"), NA, month),
-                gdp = ifelse(gdp < 20000, NA, gdp))
-
-## ----  fig.align='center', eval= FALSE----------------------------------------
-#  overview_na(toydata_with_na)
-
-## ---- fig.align='center', eval = FALSE----------------------------------------
-#  overview_na(toydata_with_na, perc = FALSE)
 

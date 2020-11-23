@@ -1,7 +1,7 @@
 Type: Package
 Package: overviewR
 Title: Easily Extracting Information About Your Data
-Version: 0.0.6
+Version: 0.0.7
 Authors@R: 
     c(person(given = "Cosima",
              family = "Meyer",
@@ -28,9 +28,9 @@ Language: en-US
 LazyData: true
 RoxygenNote: 7.1.1
 NeedsCompilation: no
-Packaged: 2020-08-24 07:51:14 UTC; Cosima
+Packaged: 2020-11-23 08:44:24 UTC; cosima
 Author: Cosima Meyer [cre, aut],
   Dennis Hammerschmidt [aut]
 Maintainer: Cosima Meyer <cosima.meyer@gmail.com>
 Repository: CRAN
-Date/Publication: 2020-08-24 08:30:13 UTC
+Date/Publication: 2020-11-23 09:20:03 UTC
