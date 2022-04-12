@@ -1,96 +1,135 @@
 #' @title overview_tab
 #'
 #' @description Provides an overview table for the time and scope conditions of
-#'     a data set
+#'     a data set. If a data.table object is provided, the function uses
+#'     data.table's syntax to perform the evaluation
 #'
-#' @param dat A data set object
+#' @param dat A data frame or data table object
 #' @param id Scope (e.g., country codes or individual IDs)
-#' @param time Time (e.g., time periods given by years, months, ...)
+#' @param time Time (e.g., time periods given by years, months, ...). There are three options to add a date variable: 1) Time can be a character vector containing **one** time variable, 2) a time variable following the YYYY-MM-DD format, or 3) or a list containing multiple time variables (`time = list(year = NULL, month = NULL, day = NULL)`).
+#' @param complex_date Boolean argument identifying if there is a more complex (list-wise) date_time parameter (FALSE is the default)
 #' @return A data frame object that contains a summary of a sample that
 #'     can later be converted to a 'LaTeX' output using \code{overview_print}
 #' @examples
+#' # With version 1 (and also 2):
+#'
 #' data(toydata)
 #' output_table <- overview_tab(dat = toydata, id = ccode, time = year)
+#'
+#' # With version 3:
+#' overview_tab(dat = toydata, id = ccode, time = list(year = toydata$year,
+#'              month = toydata$month, day = toydata$day), complex_date = TRUE)
+#'
 #' @export
 #' @importFrom dplyr "%>%"
+#' @importFrom rlang :=
 
 
-overview_tab <- function(dat, id, time) {
-  # Check for consecutive numbers and collapse them with "-"
-  # Inspired here: https://bit.ly/3ebZo5j
-  find_int_runs <- function(run) {
-    rundiff <- c(1, diff(run))
-    difflist <- split(run, cumsum(rundiff != 1))
-    unlist(lapply(difflist, function(x) {
-      if (length(x) %in% 1) {
-        as.character(x)
-      } else {
-        paste(x[1], "-", x[length(x)])
+overview_tab <- function(dat,
+                         id,
+                         time = list(year = NULL, month = NULL, day = NULL),
+                         complex_date = FALSE) {
+
+  # Check whether time contains multiple objects
+  if (complex_date) {
+    # Identify non-empty objects
+    time <- time[lapply(time, length) > 0]
+
+    if (is.null(time$day)) {
+      stop(
+        "The current version requires a day if you are providing multiple time arguments. Please also add a `day` in `time = list(year = ..., month = ..., day = ...)`."
+      )
+    }
+    # If month object is a character, convert it into numbers
+    if (!is.null(time$month) & !is.numeric(time$month)) {
+      date <- paste(time$year, time$month, time$day, sep = "-")
+
+      if (any(grepl("-$", date))) {
+        date <- gsub("-$", replacement = "", date)
+      } else if (any(grepl("--$", date))) {
+        date <- gsub("--$", replacement = "", date)
       }
-    }), use.names = FALSE)
+
+      # Convert a possible non-numeric month to a numeric month
+      if (!is.null(time$year) &
+          !is.null(time$month) & !is.null(time$day)) {
+        dat$date_time <-
+          as.Date(strftime(as.POSIXlt(date, format = "%Y-%b-%d")))
+      }
+      # else if (!is.null(time$year) &
+      #            !is.null(time$month) & is.null(time$day)) {
+      #   # Convert month into a numeric variable
+      #   month <-
+      #     if (any(time$month %in% month.name)) {
+      #       match(time$month, month.name)
+      #     } else if (any(time$month %in% month.abb)) {
+      #       match(time$month, month.abb)
+      #     }
+      #   dat$time <- as.Date(paste(time$year, month, sep = "-"), format = "%Y-%m")
+      #   }
+
+    }
   }
 
-  # Then start with the data
-  id <- dplyr::enquo(id)
-  time <- dplyr::enquo(time)
+  # # Also check if the time variable already has more info (e.g., YYYY-MM-DD format)
+  # if (is.Date(time)) {
+  #
+  # }
 
-  # Check the length of unique observations (based on time and id) in the
-  # data set
-  # We need this for the next check
-  length_nodup <- dat %>%
-    dplyr::distinct(!!id, !!time, .keep_all = TRUE)
+  if (any(class(dat) == "data.table")) {
+    # Start with the data
+    if (!complex_date) {
+      time <- deparse(substitute(time))
+    } else {
+      time <- deparse(substitute(date_time))
+    }
+    id <- deparse(substitute(id))
+    col_names <- c(id, time)
 
-  # Check if data set only has unique observations
-  if (nrow(length_nodup) == nrow(dat)) {
-    # Apply it to the data
-    tab <- dat %>%
-      # Select important variables
-      dplyr::select(!!id, !!time) %>%
-      # Group data
-      dplyr::group_by(!!id, !!time) %>%
-      # Arrange the data
-      dplyr::arrange(!!id, !!time) %>%
-      # Only get distinct IDs
-      dplyr::distinct(!!id) %>%
-      # Group by ID
-      dplyr::group_by(!!id) %>%
-      # Apply function generated above
-      dplyr::mutate(time_frame = paste(find_int_runs(!!time),
-        collapse = ", "
-      )) %>%
-      # Subset it to only one distinct country
-      dplyr::distinct(!!id, time_frame)
+    # Check if there are NAs in the time or id variable
+    # (and drop them but warn the user about it)
+    if (sum(is.na(dat[[id]])) > 0) {
+      warning(
+        "There is a missing value in your id variable. The missing value is automatically deleted."
+      )
+      dat <- dat[!is.na(get(id)), col_names, with = FALSE]
+    }
 
-    # Return object
-    return(tab)
-  }
-  # If this is not the case, we need to aggregate the data
-  else {
+    output <- overview_tab_dt(
+      dat = dat,
+      id = id,
+      time = time,
+      col_names = col_names
+    )
+
+  } else {
+    # Start with the data
+    if (!complex_date) {
+      time <- rlang::ensym(time)
+    } else {
+      time <- "date_time"
+      time <- rlang::ensym(time)
+    }
+    id <- rlang::ensym(id)
+
+
+    # Check if there are NAs in the time or id variable
+    # (and drop them but warn the user about it)
     dat2 <- dat %>%
-      dplyr::select(!!id, !!time) %>%
-      dplyr::group_by(!!id, !!time) %>%
-      dplyr::distinct(!!id, !!time)
+      dplyr::filter(!is.na(!!id))
 
-    # Apply code from above to the new data
-    # Apply it to the data
-    tab2 <- dat2 %>%
-      # Select important variables
-      dplyr::select(!!id, !!time) %>%
-      # # Group data
-      dplyr::group_by(!!id, !!time) %>%
-      # Arrange the data
-      dplyr::arrange(!!id, !!time) %>%
-      # Only get distinct IDs
-      dplyr::distinct(!!id) %>%
-      # Group by ID
-      dplyr::group_by(!!id) %>%
-      # Apply function generated above
-      dplyr::mutate(time_frame = paste(find_int_runs(!!time),
-        collapse = ", "
-      )) %>%
-      # Subset it to only one distinct country
-      dplyr::distinct(!!id, time_frame)
+    if (nrow(dat2) != nrow(dat)) {
+      warning(
+        "There is a missing value in your id variable. The missing value is automatically deleted."
+      )
+    }
 
-    return(tab2)
+    output <- overview_tab_df(
+      dat2 = dat2,
+      dat = dat,
+      id = id,
+      time = time
+    )
   }
+  return(output)
 }

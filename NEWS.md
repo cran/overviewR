@@ -1,3 +1,44 @@
+# overviewR 0.0.9
+- This version adds the possibility to use multiple time arguments for `overview_tab`
+- It also adds an extended `toydata` data.frame (including variables for day)
+
+---
+
+# overviewR 0.0.8.999
+- This development version adds the possibility to use a data.table object with `overview_tab` and `overview_na`
+
+---
+
+# overviewR 0.0.7.999.1
+- This development version adds the following extensions
+   - `overview_plot`
+      - Adjustable `dot_size` (default is 2)
+   - `overview_na`
+      - Option to generate `row_wise` NA values
+   - `overview_overlap`
+      - New function to compare (at the moment) two data sets using bar graphs (`plot_type = "bar"`) or Venn diagrams (`plot_type = "venn"`)
+   - `overview_print`
+      - Fixed a small issue that can cause problems with large (and complex) TeX documents 
+
+
+---
+
+# overviewR 0.0.7.999
+- This development version adds bugs fixes and extensions for 
+   - `overview_plot`
+      - some consecutive years were not correctly connected before)
+      - `color` argument to color parts of the time lines
+   - `overview_print`
+      - `label` to add a cross-reference label
+      - `fontsize` to change the font size
+   - `overview_crossplot`
+      - a new function that visualizes basically the same output as `overview_crosstab`
+   - `overview_tab`
+      - if there is a `NA` in the `id` variable this observation will be automatically deleted. The user receives a warning.
+   - `overview_crosstab`
+      - if there is a `NA` in the `id` variable this observation will be automatically deleted. The user receives a warning.
+   
+
 ---
 # overviewR 0.0.7
 - CRAN resubmission
