@@ -164,6 +164,7 @@ test_that("check output of overview_print for crosstab with save_out", {
 
 
 test_that("Get a warning message from overview_crosstab", {
+  testthat::skip_on_cran()
   data_test <- toydata %>%
     dplyr::mutate(ccode = ifelse(ccode == "RWA", NA, ccode))
   expect_warning(
@@ -194,6 +195,37 @@ test_that("Get an error message", {
         scope dimension of the data"
   )
 })
+
+test_that("check output of for crosstab", {
+  testthat::skip_on_cran()
+
+  toydata_no_dup <-
+    toydata %>%
+    dplyr::select(ccode, year, population, gdp) %>%
+    dplyr::group_by(ccode, year) %>%
+    dplyr::mutate(
+      ccode = dplyr::first(ccode),
+      year = dplyr::first(year),
+      population = mean(population),
+      gdp = mean(gdp)
+    ) %>%
+    dplyr::mutate(ccode = ifelse(year == 1990 & ccode == "RWA", NA, ccode)) %>%
+    dplyr::ungroup() %>%
+    dplyr::distinct()
+
+  expect_warning(
+    overview_crosstab(
+      dat = toydata_no_dup,
+      id = ccode,
+      time = year,
+      cond1 = population,
+      cond2 = gdp,
+      threshold1 = 27000,
+      threshold2 = 25000
+    )
+    )
+})
+
 
 test_that("Get a warning message", {
   data_test <- data.frame(countries  = c("RWA", "BDI"),
@@ -399,6 +431,49 @@ test_that("check output of overview_crossplot", {
 })
 
 
+test_that("check output of overview_crossplot without dups", {
+  toydata_no_dup <-
+    toydata %>%
+    dplyr::select(ccode, year, population, gdp) %>%
+    dplyr::group_by(ccode, year) %>%
+    dplyr::mutate(
+      ccode = dplyr::first(ccode),
+      year = dplyr::first(year),
+      population = mean(population),
+      gdp = mean(gdp)
+    ) %>%
+    dplyr::ungroup() %>%
+    dplyr::distinct()
+
+  plot_cross <-
+    overview_crossplot(toydata_no_dup, ccode, year, gdp, population, 25000, 27000)
+  testthat::expect_is(plot_cross, "ggplot")
+  plot_cross_col <-
+    overview_crossplot(toydata_no_dup, ccode, year, gdp, population, 25000, 27000,
+                       color = TRUE)
+  testthat::expect_is(plot_cross_col, "ggplot")
+  plot_cross_lab <-
+    overview_crossplot(toydata_no_dup, ccode, year, gdp, population, 25000, 27000,
+                       label = TRUE)
+  testthat::expect_is(plot_cross_lab, "ggplot")
+  plot_cross_lab_col <-
+    overview_crossplot(
+      toydata_no_dup,
+      ccode,
+      year,
+      gdp,
+      population,
+      25000,
+      27000,
+      label = TRUE,
+      color = TRUE
+    )
+  testthat::expect_is(plot_cross_lab, "ggplot")
+
+
+})
+
+
 
 test_that("check output of overview_crossplot with label FALSE", {
   plot_cross_no_lab <-
@@ -442,7 +517,9 @@ test_that("check output of overview_crossplot with no color", {
   testthat::expect_is(plot_cross_no_col, "ggplot")
 })
 
-
+test_that("for time$day in overview_tab", {
+  expect_error(overview_tab(dat = toydata, id = ccode, time = list(year = toydata$year, month = toydata$month, day = NULL), complex_date=TRUE))
+})
 # test_that("check output of overview_crossplot with unique observations", {
 #   modified <- toydata %>%
 #     dplyr::ungroup() %>%

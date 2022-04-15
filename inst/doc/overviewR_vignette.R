@@ -4,27 +4,26 @@ knitr::opts_chunk$set(collapse = TRUE,
 
 ## ----echo=FALSE,results='hide',message=FALSE,include=FALSE, eval=TRUE---------
 if (!require(knitr))
-  install.packages("knitr", repos = "http://cran.us.r-project.org")
+  install.packages("knitr")
 if (!require(devtools))
-  install.packages("devtools", repos = "http://cran.us.r-project.org")
+  install.packages("devtools")
 if (!require(dplyr))
-  install.packages("dplyr", repos = "http://cran.us.r-project.org")
+  install.packages("dplyr")
 if (!require(magrittr))
-  install.packages("magrittr", repos = "http://cran.us.r-project.org")
+  install.packages("magrittr")
 if (!require(ggplot2))
-  install.packages("ggplot2", repos = "http://cran.us.r-project.org")
+  install.packages("ggplot2")
 if (!require(countrycode))
-  install.packages("countrycode", repos = "http://cran.us.r-project.org")
+  install.packages("countrycode")
 if (!require(xtable))
-  install.packages("xtable", repos = "http://cran.us.r-project.org"
-  )
+  install.packages("xtable")
 
 ## ---- eval=FALSE--------------------------------------------------------------
 #  install.packages("overviewR", force = TRUE)
 
-## ---- message=FALSE, warning=FALSE, results = "hide", eval=TRUE---------------
-library(devtools)
-devtools::install_github("cosimameyer/overviewR")
+## ---- message=FALSE, warning=FALSE, results = "hide", eval=FALSE--------------
+#  library(devtools)
+#  devtools::install_github("cosimameyer/overviewR")
 
 ## ---- include = FALSE, eval = FALSE-------------------------------------------
 #  install.packages("overviewR")
@@ -41,6 +40,13 @@ head(toydata)
 
 ## ---- message=FALSE, eval=FALSE-----------------------------------------------
 #  output_table
+
+## ---- message=FALSE, eval=FALSE-----------------------------------------------
+#  output_table_complex <- overview_tab(dat = toydata, id = ccode, time = list(year = toydata$year,
+#               month = toydata$month, day = toydata$day), complex_date = TRUE)
+
+## ---- message=FALSE, eval=FALSE-----------------------------------------------
+#  output_table_complex
 
 ## ---- message=FALSE, warning=FALSE, eval=FALSE--------------------------------
 #  output_crosstab <- overview_crosstab(
@@ -122,9 +128,6 @@ overview_plot(
 )
 
 ## ---- out.width = '50%', fig.align='center', include = TRUE, results = TRUE, message = FALSE, warning=FALSE----
-# Load the GitHub version
-library(devtools) # Tools to Make Developing R Packages Easier
-devtools::install_github("cosimameyer/overviewR")
 library(overviewR) # Easily Extracting Information About Your Data
 library(magrittr) # A Forward-Pipe Operator for R
 
@@ -150,10 +153,6 @@ overview_plot(
 #  )
 
 ## ---- out.width = '50%', fig.align='center', include = TRUE, results = TRUE, message = FALSE, warning=FALSE----
-# Load the GitHub version
-library(devtools) # Tools to Make Developing R Packages Easier
-devtools::install_github("cosimameyer/overviewR")
-library(overviewR) # Easily Extracting Information About Your Data
 overview_crossplot(
   toydata,
   id = ccode,

@@ -1,10 +1,9 @@
-#' @title Helper function to check for date
-#' @param x Date object to be checked
+#' @title find_int_runs
 #'
-is.Date <- function(x) {
-  inherits(x, c("Date", "POSIXt"))
-}
-
+#' @description Function used in `overview_tab` to find running integers
+#'
+#' @param run Variable (integer) that should be checked for consecutive values
+#' @return The function returns a data set
 
 # Check for consecutive numbers and collapse them with "-"
 # Inspired here: https://bit.ly/3ebZo5j
