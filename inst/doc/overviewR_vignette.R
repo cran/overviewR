@@ -42,8 +42,11 @@ head(toydata)
 #  output_table
 
 ## ---- message=FALSE, eval=FALSE-----------------------------------------------
-#  output_table_complex <- overview_tab(dat = toydata, id = ccode, time = list(year = toydata$year,
-#               month = toydata$month, day = toydata$day), complex_date = TRUE)
+#  output_table_complex <- overview_tab(dat = toydata, id = ccode,
+#                                       time = list(year = toydata$year,
+#                                                   month = toydata$month,
+#                                                   day = toydata$day),
+#                                       complex_date = TRUE)
 
 ## ---- message=FALSE, eval=FALSE-----------------------------------------------
 #  output_table_complex
@@ -166,7 +169,7 @@ overview_crossplot(
 )
 
 ## ---- include = FALSE---------------------------------------------------------
-toydata_red <- toydata[-sample(seq_len(nrow(toydata)), 64),]
+toydata_red <- toydata[-sample(seq_len(nrow(toydata)), 64), ]
 
 ## ---- out.width = '50%', fig.align='center'-----------------------------------
 overview_heat(toydata_red,
@@ -204,10 +207,11 @@ overview_overlap(
 )
 
 ## ---- out.width = '50%', fig.align='center'-----------------------------------
-library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics
+library(ggplot2) # Create Elegant Data Visualisations 
+                 # Using the Grammar of Graphics
 
 overview_na(toydata_with_na) +
-  ggplot2::theme_minimal() 
+  ggplot2::theme_minimal()
 
 ## ---- out.width = '50%', fig.align='center'-----------------------------------
 library(dplyr) # A Grammar of Data Manipulation # A Grammar of Data Manipulation
