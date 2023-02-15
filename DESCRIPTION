@@ -1,7 +1,7 @@
 Type: Package
 Package: overviewR
 Title: Easily Extracting Information About Your Data
-Version: 0.0.11
+Version: 0.0.13
 Authors@R: c(
     person("Cosima", "Meyer", , "cosima.meyer@gmail.com", role = c("cre", "aut")),
     person("Dennis", "Hammerschmidt", , "dennis_hammerschmidt@yahoo.com", role = "aut")
@@ -24,11 +24,11 @@ VignetteBuilder: knitr, rmarkdown
 Encoding: UTF-8
 Language: en-US
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 NeedsCompilation: no
-Packaged: 2022-08-06 07:04:17 UTC; cosima
+Packaged: 2023-02-15 07:41:16 UTC; cosima
 Author: Cosima Meyer [cre, aut],
   Dennis Hammerschmidt [aut]
 Maintainer: Cosima Meyer <cosima.meyer@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-08-06 08:50:02 UTC
+Date/Publication: 2023-02-15 07:50:02 UTC

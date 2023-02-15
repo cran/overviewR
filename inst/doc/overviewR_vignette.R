@@ -66,13 +66,13 @@ head(toydata)
 #  output_crosstab
 
 ## ---- eval=FALSE--------------------------------------------------------------
-#  overview_print(obj = output_table)
+#  overview_latex(obj = output_table)
 
 ## ---- eval=FALSE, include=FALSE-----------------------------------------------
-#  overview_print(obj = output_table)
+#  overview_latex(obj = output_table)
 
 ## ---- eval = FALSE, eval=FALSE------------------------------------------------
-#  overview_print(
+#  overview_latex(
 #    obj = output_table,
 #    id = "Countries",
 #    time = "Years",
@@ -80,7 +80,7 @@ head(toydata)
 #  )
 
 ## ---- eval=FALSE, include=FALSE-----------------------------------------------
-#  overview_print(
+#  overview_latex(
 #    obj = output_table,
 #    id = "Countries",
 #    time = "Years",
@@ -88,7 +88,7 @@ head(toydata)
 #  )
 
 ## ---- eval = FALSE------------------------------------------------------------
-#  overview_print(
+#  overview_latex(
 #    obj = output_crosstab,
 #    title = "Cross table of the sample",
 #    crosstab = TRUE,
@@ -97,7 +97,7 @@ head(toydata)
 #  )
 
 ## ---- eval=FALSE, include=FALSE-----------------------------------------------
-#  overview_print(
+#  overview_latex(
 #    obj = output_crosstab,
 #    title = "Cross table of the sample",
 #    crosstab = TRUE,
@@ -106,16 +106,15 @@ head(toydata)
 #  )
 
 ## ---- eval = FALSE------------------------------------------------------------
-#  overview_print(obj = output_table,
+#  overview_latex(obj = output_table,
 #                 fontsize = "scriptsize",
 #                 label = "tab:overview")
 
 ## ---- eval = FALSE------------------------------------------------------------
-#  overview_print(
+#  overview_latex(
 #    obj = output_table,
 #    save_out = TRUE,
-#    path = "SET-YOUR-PATH",
-#    file = "output.tex"
+#    file_path = "SET-YOUR-PATH/output.tex"
 #  )
 
 ## ---- out.width = '50%', fig.align='center'-----------------------------------
@@ -135,7 +134,7 @@ library(overviewR) # Easily Extracting Information About Your Data
 library(magrittr) # A Forward-Pipe Operator for R
 
 # Code whether a year was before 1995
-toydata %<>%
+toydata <- toydata %>%
   dplyr::mutate(before = ifelse(year < 1995, 1, 0))
 
 # Plot using the `color` argument
@@ -146,14 +145,23 @@ overview_plot(
   color = before
 )
 
-## ---- eval = FALSE------------------------------------------------------------
-#  # Plot using the `color` argument
-#  overview_plot(
-#    dat = toydata,
-#    id = ccode,
-#    time = year,
-#    dot_size = 5
-#  )
+## ---- out.width = '50%', fig.align='center', include = TRUE, results = TRUE, message = FALSE, warning=FALSE----
+# Plot using the `color` argument
+overview_plot(
+  dat = toydata,
+  id = ccode,
+  time = year,
+  dot_size = 5
+)
+
+## ---- out.width = '50%', fig.align='center', include = TRUE, results = TRUE, message = FALSE, warning=FALSE----
+library(ggplot2)
+
+overview_plot(
+  dat = toydata,
+  id = ccode,
+  time = year
+) + ggplot2::scale_color_brewer(palette="Dark2")
 
 ## ---- out.width = '50%', fig.align='center', include = TRUE, results = TRUE, message = FALSE, warning=FALSE----
 overview_crossplot(
@@ -168,7 +176,7 @@ overview_crossplot(
   label = TRUE
 )
 
-## ---- include = FALSE---------------------------------------------------------
+## ---- include = TRUE----------------------------------------------------------
 toydata_red <- toydata[-sample(seq_len(nrow(toydata)), 64), ]
 
 ## ---- out.width = '50%', fig.align='center'-----------------------------------
@@ -178,7 +186,7 @@ overview_heat(toydata_red,
               perc = TRUE,
               exp_total = 12)
 
-## ---- include=FALSE-----------------------------------------------------------
+## ---- include=TRUE------------------------------------------------------------
 toydata_with_na <- toydata %>%
   dplyr::mutate(
     year = ifelse(year < 1992, NA, year),
@@ -235,7 +243,7 @@ toydata %>%
 #  # Produces a printable LaTeX output
 #  toydata %>%
 #    overview_tab(id = ccode, time = year) %>%
-#    overview_print()
+#    overview_latex()
 
 ## ---- eval=FALSE--------------------------------------------------------------
 #  library(flextable) # not installed on this machine

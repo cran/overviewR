@@ -1,4 +1,4 @@
-#' @title overview_print
+#' @title overview_latex
 #'
 #' @description Produces a 'LaTeX' output for output obtained via
 #'    \code{overview_tab} and \code{overview_crosstab}
@@ -19,21 +19,29 @@
 #'     for \code{cond2} in \code{overview_crosstab}
 #' @param save_out Optional argument, exports the output table as a .tex
 #'     file, default is FALSE
-#' @param path Specifies the path where the output should be saved
-#' @param file Specifies name and file type (.tex)
+#' @param file_path Specifies the path and file name (.tex) where you store your output
 #' @param label Specifies the label (default is "tab:tab1")
 #' @param fontsize Specifies the font size (all 'LaTeX' font sizes such as
 #'     "scriptsize" or "small" work)
+#' @param path This argument is deprecated. Please use "file_path" instead and add the full path.
+#' @param file This argument is deprecated. Please use "file_path" instead and add the full path.
 #' @return A 'LaTeX' output that can either be copy-pasted in a text document or
 #'     exported directed as a .tex file
 #' @examples
 #' data(toydata)
 #'
 #' overview_object <- overview_tab(dat = toydata, id = ccode, time = year)
-#' overview_print(
+#' overview_latex(
 #'   obj = overview_object,
 #'   title = "Some nice title",
 #'   crosstab = FALSE
+#' )
+#'
+#'#' overview_object <- overview_tab(dat = toydata, id = ccode, time = year)
+#' overview_latex(
+#'   obj = overview_object,
+#'   title = "Some nice title",
+#'   file_path = "some/path_to/your_output_file.tex"
 #' )
 #'
 #' overview_ct_object <- overview_crosstab(
@@ -45,18 +53,18 @@
 #'   id = ccode,
 #'   time = year
 #' )
-#' overview_print(
+#' overview_latex(
 #'   obj = overview_ct_object,
 #'   title = "Some nice title for a cross tab",
 #'   crosstab = TRUE,
 #'   cond1 = "Name of first condition",
 #'   cond2 = "Name of second condition"
 #' )
-#' @export
+#' @export overview_latex overview_latex
 #' @importFrom dplyr "%>%"
 
 
-overview_print <-
+overview_latex <-
   function(obj,
            title = "Time and scope of the sample",
            id = "Sample",
@@ -65,10 +73,18 @@ overview_print <-
            cond1 = "Condition 1",
            cond2 = "Condition 2",
            save_out = FALSE,
-           path,
-           file,
+           file_path,
            label = "tab:tab1",
-           fontsize) {
+           fontsize,
+           file,
+           path) {
+
+    if (!missing("file") & !missing("path")){
+      warning("Argument deprecated, use 'file_path' instead.
+              The parameter 'file' and 'path' are combined to become 'file_path'.")
+      file_path <- paste0(path, file)
+    }
+
     obj <- as.matrix(obj)
 
     # Add a fontsize (if defined)
@@ -123,8 +139,7 @@ overview_print <-
           cat(begin_tab, out, end_tab)
         }
         if (save_out == TRUE) {
-          save_dir <- paste0(path, file)
-          sink(save_dir)
+          sink(file_path)
           cat(begin_tab, out, end_tab)
           sink()
         }
@@ -182,8 +197,7 @@ overview_print <-
         }
       }
       if (save_out == TRUE) {
-        save_dir <- paste0(path, file)
-        sink(save_dir)
+        sink(file_path)
         cat(
           begin_crosstab,
           cross_out1,
@@ -195,3 +209,5 @@ overview_print <-
       }
     }
   }
+
+overview_print <- overview_latex
